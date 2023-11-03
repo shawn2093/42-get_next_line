@@ -65,8 +65,8 @@ char	*ft_strchr(char *s, int c)
 	ptr = s;
 	while (*ptr)
 	{
-		if (*ptr == (unsigned char) c && *(ptr + 1))
-			return (ptr + 1);
+		if (*ptr == (unsigned char) c)
+			return ptr;
 		ptr++;
 	}
 	if (*ptr == '\0' && c == '\0')
@@ -107,15 +107,22 @@ char *get_next_line(int fd)
 	static char	*str;
 	char		*fullstr;
 
-    buffer = 3;
-	str = (char *) malloc(buffer * sizeof(char));
+    buffer = 1;
+	if (!str)
+	{
+		str = (char *) malloc(buffer * sizeof(char));
+		fullstr = "";
+	}
+	else
+		fullstr = str;
 	bytes_read = buffer;
-	fullstr = "";
 	i = -1;
     while (buffer <= bytes_read)
     {
 		if (!ft_strchr(str, '\n'))
 	    	bytes_read = read(fd, str, buffer);
+		else
+			fullstr = "";
 		while (str[++i])
 		{
 			if (str[i] == '\n')
