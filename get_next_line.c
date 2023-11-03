@@ -1,63 +1,5 @@
 #include "get_next_line.h"
 
-void	*ft_memchr(const void *s, int c, size_t n)
-{
-	size_t			i;
-	unsigned char	*str;
-	unsigned char	chr;
-
-	str = (unsigned char *)s;
-	chr = (unsigned char)c;
-	i = 0;
-	while (i < n)
-	{
-		if (str[i] == chr)
-			return (&str[i]);
-		i++;
-	}
-	return (0);
-}
-
-t_list	*ft_lstlast(t_list *lst)
-{
-	while (lst)
-	{
-		if (!(lst->next))
-			return (lst);
-		else
-			lst = lst->next;
-	}
-	return (lst);
-}
-
-void	ft_lstadd_back(t_list **lst, t_list *new)
-{
-	t_list	*tmp;
-
-	if (lst && new)
-	{
-		if (*lst)
-		{
-			tmp = ft_lstlast(*lst);
-			tmp->next = new;
-		}
-		else
-			*lst = new;
-	}
-}
-
-t_list	*ft_lstnew(char *content)
-{
-	t_list	*ptr;
-
-	ptr = (t_list *)malloc(sizeof(t_list));
-	if (!ptr)
-		return (0);
-	ptr->str = content;
-	ptr->next = NULL;
-	return (ptr);
-}
-
 size_t	ft_strlen(const char *s)
 {
 	size_t	count;
@@ -89,31 +31,6 @@ char	*ft_strdup(const char *s1)
 	return (t);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	unsigned int	i;
-	char			*str;
-	size_t			count;
-	size_t			real;
-
-	if (!s)
-		return (NULL);
-	count = ft_strlen(s);
-	real = count;
-	if ((size_t)start >= count || len == 0)
-		return (ft_strdup(""));
-	i = 0;
-	if (count > len)
-		real = len;
-	str = (char *)malloc(sizeof(char) * (real + 1));
-	if (!str)
-		return (0);
-	while ((size_t)i < real && s[start])
-		str[i++] = s[start++];
-	str[i] = '\0';
-	return (str);
-}
-
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	size_t	total_len;
@@ -141,31 +58,77 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (str);
 }
 
+char	*ft_strchr(char *s, int c)
+{
+	char	*ptr;
+
+	ptr = s;
+	while (*ptr)
+	{
+		if (*ptr == (unsigned char) c && *(ptr + 1))
+			return (ptr + 1);
+		ptr++;
+	}
+	if (*ptr == '\0' && c == '\0')
+		return (ptr);
+	return (0);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	unsigned int	i;
+	char			*str;
+	size_t			count;
+	size_t			real;
+
+	if (!s)
+		return (NULL);
+	count = ft_strlen(s);
+	real = count;
+	if ((size_t)start >= count || len == 0)
+		return (ft_strdup(""));
+	i = 0;
+	if (count > len)
+		real = len;
+	str = (char *)malloc(sizeof(char) * (real + 1));
+	if (!str)
+		return (0);
+	while ((size_t)i < real && s[start])
+		str[i++] = s[start++];
+	str[i] = '\0';
+	return (str);
+}
+
 char *get_next_line(int fd)
 {
-    //t_list	**begin;
-	t_list	*tmp;
-	size_t	bytes_read;
-	size_t     buffer;
-	char	*str;
-	char	*fullstr;
+	size_t		bytes_read;
+	size_t		buffer;
+	int			i;
+	static char	*str;
+	char		*fullstr;
 
-    buffer = 1;
+    buffer = 3;
 	str = (char *) malloc(buffer * sizeof(char));
-	tmp = (t_list *) malloc(sizeof(t_list));
 	bytes_read = buffer;
 	fullstr = "";
+	i = -1;
     while (buffer <= bytes_read)
     {
-	    bytes_read = read(fd, str, buffer);
-		fullstr = ft_strjoin((char const *)fullstr, (char const *)str);
-		if (ft_memchr((const void *)str, '\n', bytes_read))
+		if (!ft_strchr(str, '\n'))
+	    	bytes_read = read(fd, str, buffer);
+		while (str[++i])
+		{
+			if (str[i] == '\n')
+				break ;
+		}
+		fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) (i + 1)));
+		if (ft_strchr(str, '\n'))
+		{
+			str = ft_strchr(str, '\n');
 			return (fullstr);
-		// tmp = ft_lstnew(str);
-		// ft_lstadd_back(begin, tmp);
+		}
     }
 	return (fullstr);
-
 }
 
 int	main(void)
