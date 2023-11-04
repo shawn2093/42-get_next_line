@@ -66,7 +66,7 @@ char	*ft_strchr(char *s, int c)
 	while (*ptr)
 	{
 		if (*ptr == (unsigned char) c)
-			return ptr;
+			return (ptr + 1);
 		ptr++;
 	}
 	if (*ptr == '\0' && c == '\0')
@@ -101,52 +101,182 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 
 char *get_next_line(int fd)
 {
-	size_t		bytes_read;
-	size_t		buffer;
-	int			i;
-	static char	*str;
-	char		*fullstr;
+	size_t			bytes_read;
+	int				i;
+	char			*fullstr;
+	static char		*str;
 
-    buffer = 1;
+	if (BUFFER_SIZE <= 0 || fd < 0 || read(fd, str, 0))
+		return (NULL);
 	if (!str)
-	{
-		str = (char *) malloc(buffer * sizeof(char));
 		fullstr = "";
-	}
 	else
-		fullstr = str;
-	bytes_read = buffer;
+		fullstr = ft_strdup(str);
+	str = (char *) malloc(BUFFER_SIZE * sizeof(char) + 1);
+	bytes_read = BUFFER_SIZE;
 	i = -1;
-    while (buffer <= bytes_read)
+    while (BUFFER_SIZE <= bytes_read)
     {
+		i = 0;
 		if (!ft_strchr(str, '\n'))
-	    	bytes_read = read(fd, str, buffer);
+		{
+	    	bytes_read = read(fd, str, BUFFER_SIZE);
+			str[bytes_read] = '\0';
+		}
 		else
 			fullstr = "";
-		while (str[++i])
-		{
-			if (str[i] == '\n')
-				break ;
-		}
-		fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) (i + 1)));
+		// if (ft_strlen(str) > buffer)
+		// 	str = ft_substr((char const *)str, 0, bytes_read);
+		// printf("str after first if in while: --%s--\n", str);
+		// printf("fullstr after first if in while: %s\n", fullstr);
+		while (str[i] && str[i] != '\n')
+			i++;
+		// printf("%d\n", i);
+		// if (bytes_read >= buffer)
+		// 	fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
+		fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
 		if (ft_strchr(str, '\n'))
 		{
 			str = ft_strchr(str, '\n');
 			return (fullstr);
 		}
     }
+	free(str);
 	return (fullstr);
 }
 
-int	main(void)
-{
-	int		fd;
+// char *create_line(t_list **begin)
+// {
+// 	t_list	*tmp;
+// 	int		count;
+// 	char	*str;
+// 	int		len;
 
-    fd = open("numbers.dict", O_RDONLY);
-	if (fd == -1)
-		write(1, "Error!\n", 7);
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	close(fd);
-	return (0);
-}
+// 	if (!*begin)
+// 		return (NULL);
+// 	count = 1;
+// 	tmp = *begin;
+// 	while (tmp)
+// 	{
+// 		tmp = tmp->next;
+// 		count++;
+// 	}
+// 	str = (char *)malloc(sizeof(char) * (BUFFER_SIZE * count + 1));
+// 	len = 0;
+// 	count = 0;
+// 	while((*begin)->str[len])
+// 	{
+// 		str[BUFFER_SIZE * count + len] = (*begin)->str[len];
+// 		if ((*begin)->str[len] == '\n')
+// 		{
+// 			str[BUFFER_SIZE * count + len + 1] = '\0';
+// 			(*begin)->str = ft_strchr((*begin)->str, '\n');
+// 			return (str);
+// 		}
+// 		len++;
+// 		if (len == BUFFER_SIZE || len == (int) ft_strlen((*begin)->str))
+// 		{
+// 			printf("%d\n", len);
+// 			len = 0;
+// 			count++;
+// 			tmp = *begin;
+// 			*begin = (*begin)->next;
+// 			//free(tmp->str);
+// 			//free(tmp);
+// 		}
+// 	}
+// 	return (0);
+// }
+
+// char *get_next_line(int fd)
+// {
+// 	size_t			bytes_read;
+// 	int				i;
+// 	static t_list	*begin;
+// 	t_list			*tmp;
+// 	char			str[BUFFER_SIZE];
+
+// 	tmp = (t_list *)malloc(sizeof(t_list));
+// 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, str, ))
+// 		return (NULL);
+// 	if (!begin)
+// 		begin = tmp;
+// 	bytes_read = read(fd, str, BUFFER_SIZE);
+// 	tmp->str = ft_strdup(str);
+// 	tmp->next = NULL;
+//     while (BUFFER_SIZE <= bytes_read)
+//     {
+// 		i = 0;
+// 		while (str[i] != '\n' && i != BUFFER_SIZE)
+// 			i++;
+// 		if (i == BUFFER_SIZE)
+// 		{
+// 			bytes_read = read(fd, str, BUFFER_SIZE);
+// 			tmp = tmp->next;
+// 			tmp->str = ft_strdup(str);
+// 			tmp->next = NULL;
+// 		}
+// 		else
+// 			return (create_line(&begin));
+//     }
+// 	return (0);
+// }
+
+// int	main(void)
+// {
+// 	int		fd;
+
+//     fd = open("numbers.dict", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	close(fd);
+// 	return (0);
+// }
