@@ -276,22 +276,44 @@ int	ft_lstsize(t_list *lst)
 
 void clean_list(t_list **bufstr)
 {
-	int		count;
+	int		i;
+	int		k;
+	t_list	*new;
 	t_list	*tmp;
+	char	*str;
 	
 	if (!bufstr || !*bufstr)
 		return ;
-	count = ft_lstsize(*bufstr);
-	while (count > 1)
+	str = (char *) malloc(sizeof(char) * BUFFER_SIZE + 1);
+	new = (t_list *) malloc(sizeof(t_list));
+	if (!str || !new)
+		return ;
+	tmp = ft_lstlast(*bufstr);
+	i = -1;
+	k = 0;
+	while (tmp->str[++i])
 	{
-		tmp = *bufstr;
-		if (count == 1)
-			(*bufstr)->str = ft_strchr(tmp->str, '\n');
-		else
-			*bufstr = (*bufstr)->next;
-		free(tmp->str);
-		free(tmp);
-		count--;
+		if (tmp->str[i] == '\n')
+			break ;
+	}
+	while (tmp->str[i++])
+		str[k++] = tmp->str[i];
+	str[k] = 0;
+	new->str = str;
+	new->next = NULL;
+	while (*bufstr)
+	{
+		tmp = (*bufstr)->next;
+		free((*bufstr)->str);
+		free(*bufstr);
+		*bufstr = tmp;
+	}
+	if (*str)
+		*bufstr = new;
+	else
+	{
+		free(str);
+		free(new);
 	}
 }
 
@@ -394,14 +416,17 @@ char *get_next_line(int fd)
 	return(str);
 }
 
-int	main(void)
-{
-	int		fd;
+// int	main(void)
+// {
+// 	int		fd;
 
-    fd = open("numbers.dict", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	close(fd);
-	return (0);
-}
+//     fd = open("files/multiple_line_no_nl", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%d", get_next_line(fd) == NULL);
+// 	close(fd);
+// 	return (0);
+// }
