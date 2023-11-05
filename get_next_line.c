@@ -99,51 +99,103 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (str);
 }
 
-char *get_next_line(int fd)
+t_list	*ft_lstlast(t_list *lst)
 {
-	size_t			bytes_read;
-	int				i;
-	char			*fullstr;
-	static char		*str;
+	while (lst)
+	{
+		if (!(lst->next))
+			return (lst);
+		else
+			lst = lst->next;
+	}
+	return (lst);
+}
 
-	if (BUFFER_SIZE <= 0 || fd < 0 || read(fd, str, 0))
-		return (NULL);
-	if (!str)
-		fullstr = "";
-	else
-		fullstr = ft_strdup(str);
-	str = (char *) malloc(BUFFER_SIZE * sizeof(char) + 1);
-	bytes_read = BUFFER_SIZE;
-	i = -1;
-    while (BUFFER_SIZE <= bytes_read)
-    {
-		i = 0;
-		if (!ft_strchr(str, '\n'))
+void	ft_lstadd_back(t_list **lst, t_list *new)
+{
+	t_list	*tmp;
+
+	if (lst && new)
+	{
+		if (*lst)
 		{
-	    	bytes_read = read(fd, str, BUFFER_SIZE);
-			str[bytes_read] = '\0';
+			tmp = ft_lstlast(*lst);
+			tmp->next = new;
 		}
 		else
-			fullstr = "";
-		// if (ft_strlen(str) > buffer)
-		// 	str = ft_substr((char const *)str, 0, bytes_read);
-		// printf("str after first if in while: --%s--\n", str);
-		// printf("fullstr after first if in while: %s\n", fullstr);
-		while (str[i] && str[i] != '\n')
-			i++;
-		// printf("%d\n", i);
-		// if (bytes_read >= buffer)
-		// 	fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
-		fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
-		if (ft_strchr(str, '\n'))
-		{
-			str = ft_strchr(str, '\n');
-			return (fullstr);
-		}
-    }
-	free(str);
-	return (fullstr);
+			*lst = new;
+	}
 }
+
+int	ft_lstsize(t_list *lst)
+{
+	int	count;
+
+	count = 0;
+	while (lst)
+	{
+		lst = lst->next;
+		count++;
+	}
+	return (count);
+}
+
+// char *get_next_line(int fd)
+// {
+// 	size_t			bytes_read;
+// 	int				i;
+// 	char			*fullstr;
+// 	static char		*str;
+// 	char			*tmp;
+
+// 	if (BUFFER_SIZE <= 0 || fd < 0 || read(fd, str, 0) < 0)
+// 		return (NULL);
+// 	if (!str)
+// 		fullstr = 0;
+// 	else
+// 	{
+// 		tmp = ft_strchr(str, '\n');
+// 		if (tmp)
+// 		{
+// 			i = 0;
+// 			while (str[i] && str[i] != '\n')
+// 				i++;
+// 			fullstr = ft_substr((char const *)str, 0, (size_t) i + 1);
+// 			str = tmp;
+// 			return (fullstr);
+// 		}
+// 		tmp = ft_strdup(str);
+// 	}
+// 	str = (char *) malloc(BUFFER_SIZE * sizeof(char) + 1);
+// 	bytes_read = BUFFER_SIZE;
+//     while ((bytes_read = read(fd, str, BUFFER_SIZE)) > 0)
+//     {
+// 		str[bytes_read] = '\0';
+// 		i = 0;
+// 		// if (ft_strlen(str) > buffer)
+// 		// 	str = ft_substr((char const *)str, 0, bytes_read);
+// 		// printf("str after first if in while: --%s--\n", str);
+// 		// printf("fullstr after first if in while: %s\n", fullstr);
+// 		while (str[i] && str[i] != '\n')
+// 			i++;
+// 		// printf("%d\n", i);
+// 		// if (bytes_read >= buffer)
+// 		// 	fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
+// 		fullstr = ft_strjoin((char const *)tmp, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
+// 		if (str[i] == '\n')
+// 		{
+// 			str = ft_strchr(str, '\n');
+// 			return (fullstr);
+// 		}
+//     }
+// 	if (bytes_read == 0)
+// 	{
+// 		free(str);
+// 		str = 0;
+// 	}
+// 	free(str);
+// 	return (fullstr);
+// }
 
 // char *create_line(t_list **begin)
 // {
@@ -222,61 +274,134 @@ char *get_next_line(int fd)
 // 	return (0);
 // }
 
-// int	main(void)
-// {
-// 	int		fd;
+void clean_list(t_list **bufstr)
+{
+	int		count;
+	t_list	*tmp;
+	
+	if (!bufstr || !*bufstr)
+		return ;
+	count = ft_lstsize(*bufstr);
+	while (count > 1)
+	{
+		tmp = *bufstr;
+		if (count == 1)
+			(*bufstr)->str = ft_strchr(tmp->str, '\n');
+		else
+			*bufstr = (*bufstr)->next;
+		free(tmp->str);
+		free(tmp);
+		count--;
+	}
+}
 
-//     fd = open("numbers.dict", O_RDONLY);
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	close(fd);
-// 	return (0);
-// }
+char *get_line(t_list *bufstr)
+{
+	char	*str;
+	int		count;
+	t_list	*tmp;
+	int		i;
+	int		len;
+
+	count = ft_lstsize(bufstr);
+	tmp = ft_lstlast(bufstr);
+	i = -1;
+	while (tmp->str[++i])
+	{
+		if (tmp->str[i] == '\n')
+			break;
+	}
+	len = BUFFER_SIZE * (count - 1) + i;
+	str = (char *) malloc(sizeof(char) * len + 1);
+	len = 0;
+	while (bufstr)
+	{
+		i = -1;
+		while (bufstr->str[++i])
+		{
+			str[len] = bufstr->str[i];
+			len++;
+			if (bufstr->str[i] == '\n')
+				break;
+		}
+		bufstr = bufstr->next;
+	}
+	str[len] = '\0';
+	return(str);
+}
+
+int found_nl(t_list **bufstr)
+{
+	t_list	*tmp;
+	int		i;
+
+	tmp = *bufstr;
+	while (tmp)
+	{
+		i = -1;
+		while(tmp->str[++i])
+		{
+			if (tmp->str[i] == '\n')
+				return (1);
+		}
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+void create_list(int fd, t_list **bufstr)
+{
+	char	*str;
+	size_t	buf;
+	t_list	*tmp;
+
+	while(!found_nl(bufstr))
+	{
+		str = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if (!str)
+			return ;
+		buf = read(fd, str, BUFFER_SIZE);
+		if (!buf)
+		{
+			free(str);
+			return ;
+		}
+		str[buf] = 0;
+		tmp = (t_list *)malloc(sizeof(t_list));
+		tmp->str = str;
+		tmp->next = 0;
+		ft_lstadd_back(bufstr, tmp);
+	}
+}
+
+char *get_next_line(int fd)
+{
+	char			*str;
+	static t_list	*bufstr;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &str, 0) < 0)
+		return (NULL);
+	create_list(fd, &bufstr);
+	if(bufstr == NULL)
+		return (NULL);
+	str = get_line(bufstr);
+	clean_list(&bufstr);
+	// while (bufstr)
+	// {
+	// 	printf("%s\n", bufstr->str);
+	// 	bufstr = bufstr->next;
+	// }
+	return(str);
+}
+
+int	main(void)
+{
+	int		fd;
+
+    fd = open("numbers.dict", O_RDONLY);
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	close(fd);
+	return (0);
+}

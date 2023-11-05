@@ -3,11 +3,11 @@
 int	main()
 {
     // t_list	*list = NULL;
-	char			*next_line;
+	char			*next_line = NULL;
     int fd;
     int rd;
 
-    fd = open("aaaaaa.txt", O_RDONLY);
+    fd = open("test.txt", O_RDONLY);
     rd = read(fd, next_line, 0);
 	if (fd < 0 || rd < 0)
     {
