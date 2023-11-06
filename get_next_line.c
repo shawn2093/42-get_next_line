@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: long <long@student.42kl.edu.my>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/06 22:59:29 by long              #+#    #+#             */
+/*   Updated: 2023/11/06 23:02:18 by long             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 // char *get_next_line(int fd)
@@ -40,8 +52,11 @@
 // 			i++;
 // 		// printf("%d\n", i);
 // 		// if (bytes_read >= buffer)
-// 		// 	fullstr = ft_strjoin((char const *)fullstr, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
-// 		fullstr = ft_strjoin((char const *)tmp, (char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
+// 		// 	fullstr = ft_strjoin((char const *)fullstr,
+//					(char const *)ft_substr((char const *)str, 0, (size_t) i
+//						+ 1));
+// 		fullstr = ft_strjoin((char const *)tmp,
+//				(char const *)ft_substr((char const *)str, 0, (size_t) i + 1));
 // 		if (str[i] == '\n')
 // 		{
 // 			str = ft_strchr(str, '\n');
@@ -134,12 +149,12 @@
 // 	return (0);
 // }
 
-char *fill_letters(t_list *bufstr, int len)
+char	*fill_letters(t_list *bufstr, int len)
 {
 	char	*str;
 	int		i;
 
-	str = (char *) malloc(sizeof(char) * len + 1);
+	str = (char *)malloc(sizeof(char) * len + 1);
 	if (!str)
 		return (NULL);
 	len = 0;
@@ -151,15 +166,15 @@ char *fill_letters(t_list *bufstr, int len)
 			str[len] = bufstr->str[i];
 			len++;
 			if (bufstr->str[i] == '\n')
-				break;
+				break ;
 		}
 		bufstr = bufstr->next;
 	}
 	str[len] = '\0';
-	return(str);
+	return (str);
 }
 
-char *get_line(t_list *bufstr)
+char	*get_line(t_list *bufstr)
 {
 	int		count;
 	t_list	*tmp;
@@ -172,13 +187,13 @@ char *get_line(t_list *bufstr)
 	while (tmp->str[++i])
 	{
 		if (tmp->str[i] == '\n')
-			break;
+			break ;
 	}
 	len = BUFFER_SIZE * (count - 1) + i;
 	return (fill_letters(bufstr, len));
 }
 
-int found_nl(t_list **bufstr)
+int	found_nl(t_list **bufstr)
 {
 	t_list	*tmp;
 	int		i;
@@ -187,7 +202,7 @@ int found_nl(t_list **bufstr)
 	while (tmp)
 	{
 		i = -1;
-		while(tmp->str[++i])
+		while (tmp->str[++i])
 		{
 			if (tmp->str[i] == '\n')
 				return (1);
@@ -197,13 +212,13 @@ int found_nl(t_list **bufstr)
 	return (0);
 }
 
-void create_list(int fd, t_list **bufstr)
+void	create_list(int fd, t_list **bufstr)
 {
 	char	*str;
 	size_t	buf;
 	t_list	*tmp;
 
-	while(!found_nl(bufstr))
+	while (!found_nl(bufstr))
 	{
 		str = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!str)
@@ -222,7 +237,7 @@ void create_list(int fd, t_list **bufstr)
 	}
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
 	char			*str;
 	static t_list	*bufstr;
@@ -230,11 +245,11 @@ char *get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &str, 0) < 0)
 		return (NULL);
 	create_list(fd, &bufstr);
-	if(bufstr == NULL)
+	if (bufstr == NULL)
 		return (NULL);
 	str = get_line(bufstr);
 	clean_list(&bufstr);
-	return(str);
+	return (str);
 }
 
 // int	main(void)

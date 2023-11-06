@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: long <long@student.42kl.edu.my>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/06 23:00:08 by long              #+#    #+#             */
+/*   Updated: 2023/11/06 23:08:31 by long             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 t_list	*ft_lstlast(t_list *lst)
@@ -41,12 +53,12 @@ int	ft_lstsize(t_list *lst)
 	return (count);
 }
 
-void make_new(t_list **bufstr, char *str)
+void	make_new(t_list **bufstr, char *str)
 {
 	t_list	*new;
 	t_list	*tmp;
 
-	new = (t_list *) malloc(sizeof(t_list));
+	new = (t_list *)malloc(sizeof(t_list));
 	if (!new)
 		return ;
 	new->str = str;
@@ -67,16 +79,16 @@ void make_new(t_list **bufstr, char *str)
 	}
 }
 
-void clean_list(t_list **bufstr)
+void	clean_list(t_list **bufstr)
 {
 	int		i;
 	int		k;
 	t_list	*tmp;
 	char	*str;
-	
+
 	if (!bufstr || !*bufstr)
 		return ;
-	str = (char *) malloc(sizeof(char) * BUFFER_SIZE + 1);
+	str = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!str)
 		return ;
 	tmp = ft_lstlast(*bufstr);
