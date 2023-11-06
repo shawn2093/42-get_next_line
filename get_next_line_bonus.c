@@ -17,7 +17,7 @@ char	*fill_letters(t_list *bufstr, int len)
 	char	*str;
 	int		i;
 
-	str = (char *)malloc(sizeof(char) * len + 1);
+	str = (char *)malloc(sizeof(char) * len + 2);
 	if (!str)
 		return (NULL);
 	len = 0;
