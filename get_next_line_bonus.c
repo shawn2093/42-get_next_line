@@ -6,7 +6,7 @@
 /*   By: long <long@student.42kl.edu.my>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 23:00:38 by long              #+#    #+#             */
-/*   Updated: 2023/11/06 23:03:55 by long             ###   ########.fr       */
+/*   Updated: 2023/11/08 03:20:22 by long             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,9 @@ void	create_list(int fd, t_list **bufstr)
 char	*get_next_line(int fd)
 {
 	char			*str;
-	static t_list	*bufstr[4096];
+	static t_list	*bufstr[FOPEN_MAX];
 
-	if (fd < 0 || fd >= 4096 || BUFFER_SIZE <= 0 || read(fd, &str, 0) < 0)
+	if (fd < 0 || fd >= FOPEN_MAX || BUFFER_SIZE <= 0 || read(fd, &str, 0) < 0)
 		return (NULL);
 	create_list(fd, &bufstr[fd]);
 	if (bufstr[fd] == NULL)
